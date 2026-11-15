@@ -1,0 +1,27 @@
+Name;Short_Name;Units;id
+Carbon Monoxide;co;kg m-2 s-1;param81.210.192
+Non-Methane Hydro-Carbons;nmhc;kg m-2 s-1;param83.210.192
+Nitrogen Oxides expressed as monoxide nitrogen;nox_no;kg m-2 s-1;param85.210.192
+Particulate Matter PM2.5;pm25;kg m-2 s-1;param87.210.192
+Organic Carbon;oc;kg m-2 s-1;param90.210.192
+Black Carbon;bc;kg m-2 s-1;param91.210.192
+Sulfur Dioxide;so2;kg m-2 s-1;param102.210.192
+Methanol;ch3oh;kg m-2 s-1;param103.210.192
+Higher Alkanes;hialkanes;kg m-2 s-1;param112.210.192
+Formaldehyde;ch2o;kg m-2 s-1;param113.210.192
+Acetaldehyde;c2h4o;kg m-2 s-1;param114.210.192
+Acetone;c3h6o;kg m-2 s-1;param115.210.192
+Ammonia;nh3;kg m-2 s-1;param116.210.192
+Dimethyl Sulfide;c2h6s;kg m-2 s-1;param117.210.192
+Ethane;c2h6;kg m-2 s-1;param118.210.192
+Toluene;c7h8;kg m-2 s-1;param231.210.192
+Benzene;c6h6;kg m-2 s-1;param232.210.192
+Xylene;c8h10;kg m-2 s-1;param233.210.192
+Butenes;c4h8;kg m-2 s-1;param234.210.192
+Pentenes;c5h10;kg m-2 s-1;param235.210.192
+Hexene;c6h12;kg m-2 s-1;param236.210.192
+Octene;c8h16;kg m-2 s-1;param237.210.192
+Butanes;c4h10;kg m-2 s-1;param238.210.192
+Pentanes;c5h12;kg m-2 s-1;param239.210.192
+Hexanes;c6h14;kg m-2 s-1;param240.210.192
+Heptane;c7h16;kg m-2 s-1;param241.210.192

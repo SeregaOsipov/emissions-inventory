@@ -1,0 +1,63 @@
+ei;sector;ref_year;active;factor_mask;regrid_mask;pollutants;path;frequency;source_type;coverage;p_vertical;p_month;p_week;p_day;p_hour;p_speciation;comment
+GFASv12;;2021;1;;;co,nox_no,pm25,oc,bc,so2,ch3oh,c2h5oh,c3h8,c2h4,c3h6,c5h8,terpenes,hialkenes,hialkanes,ch2o,c2h4o,c3h6o,nh3,c2h6s,c2h6,c7h8,c6h6,c8h10,c4h8,c5h10,c6h12,c8h16,c4h10,c5h12,c6h14,c7h16;<data_path>/ecmwf/gfas/daily_mean;daily;point;global;method=sovief,approach=uniform;;;;H001;E001;
+EDGARv81_VOC;agriculture;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E959;
+EDGARv81_VOC;fuel_exploitation;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E960;voc11 is missing in 2022, hence new profile
+EDGARv81_VOC;ind_processes;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E959;
+EDGARv81_VOC;transport;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W005;;weekday=H006, saturday=H009, sunday=H010;E959;
+EDGARv81_VOC;buildings;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H003;E959;
+EDGARv81_VOC;ind_combustion;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E959;I used the same p_ profiles as for industry
+EDGARv81_VOC;power_industry;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W002;;H002;E959;
+EDGARv81_VOC;waste;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc17,voc18,voc19,voc21,voc22,voc23,voc24,voc25;<data_path>/EDGAR/v81_VOC/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E961;voc20 is not present, hence new profile
+OMI-HTAPv2;elevated;2017;1;;;so2;<data_path>/OMI-HTAP/hermesv3_gr_pp/monthly_mean;monthly;area;global;;;W002;;H002;E096;
+OMI-HTAPv2;surface;2017;1;;;so2;<data_path>/OMI-HTAP/hermesv3_gr_pp/monthly_mean;monthly;area;global;;;W003;;H004;E096;
+wiedinmyer;;2010;1;;;bc,c2h2,c2h4,c3h6,c6h6,ch2o,ch3cooh,ch3oh,co,hcl,nh3,nox_no,oc,pm10,pm25,so2;<data_path>/ucar/wiedinmyer/yearly_mean;yearly;area;global;;M001;W001;;H008;E009;
+bourtsoukidis;;2020;1;;;ch4,c2h6,c3h8,ibutane,nbutane;<data_path>/bourtsoukidisetal/yearly_mean;yearly;point;global;;M001;W001;;H001;E097;Red Sea
+iasi;;2016;1;;;nh3;<data_path>/IASI/yearly_mean;yearly;point;global;;M001;W001;;H001;E098;Red Sea
+caseiro;;2017;1;;;bc;<data_path>/caseiroetal/yearly_mean;yearly;area;global;;M001;W001;;H001;E199;flaring from Caseiro et al. Coemit SO4 based on BC
+CAMS-GLOB-SHIP_v32;;2021;1;;;co,nox_no,oc,ec,so4,ash,so2,co2,ch4,voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/cams_glob_shipv32/daily_mean;daily;area;global;;;W001;;H001;E190;APs and speciated VOC (not generic nmvoc)
+CAMS-GLOB-SHIP_v32_voc;;2021;1;;;voc1,voc2,voc3,voc4,voc5,voc6,voc7,voc8,voc9,voc10,voc11,voc12,voc13,voc14,voc15,voc16,voc17,voc18,voc19,voc20,voc21,voc22,voc23,voc24,voc25;<data_path>/cams_glob_shipv32/daily_mean;daily;area;global;;;W001;;H001;E959;
+EDGARv81_AP;ags;2021;1;;;nox_no2,nh3,pm10,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E833;EDGAR v5, everything except NMVOC
+EDGARv81_AP;awb;2021;1;;;nox_no2,co,so2,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E834;
+EDGARv81_AP;che;2021;1;;;nox_no2,co,so2,nh3,nmvoc,pm10,bc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E835;
+EDGARv81_AP;ene;2021;1;;;nox_no2,co,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W002;;H002;E836;
+EDGARv81_AP;ind;2021;1;;;nox_no2,co,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E839;
+EDGARv81_AP;iro;2021;1;;;nox_no2,co,so2,nmvoc,pm10,bc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E840;
+EDGARv81_AP;nfe;2021;1;;;nox_no2,co,so2,pm10,bc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E843;
+EDGARv81_AP;mnm;2021;1;;;nox_no2,nh3,pm10,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E841;
+EDGARv81_AP;pro_fff;2021;1;;;nox_no2,co,so2,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E845;
+EDGARv81_AP;pru_sol;2021;1;;;nh3,nmvoc,pm10,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W004;;H005;E846;
+EDGARv81_AP;rco;2021;1;;;nox_no2,co,so2,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H003;E847;
+EDGARv81_AP;ref_trf;2021;1;;;nox_no2,co,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E848;
+EDGARv81_AP;swd_inc;2021;1;;;nox_no2,co,so2,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E849;
+EDGARv81_AP;swd_ldf;2021;1;;;nh3,nmvoc,pm10,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E850;
+EDGARv81_AP;tnr_aviation_cds;2021;0;;;nox_no2,co,so2,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E851;
+EDGARv81_AP;tnr_aviation_crs;2021;0;;;nox_no2,co,so2,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E852;
+EDGARv81_AP;tnr_aviation_lto;2021;1;;;nox_no2,co,so2,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E853;
+EDGARv81_AP;tnr_other;2021;1;;;nox_no2,co,so2,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E854;
+EDGARv81_AP;tnr_ship;2021;0;;;nox_no2,co,so2,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E855;
+EDGARv81_AP;tro;2021;1;;;nox_no2,co,so2,nh3,nmvoc,pm10,bc,oc,pm25;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W005;;weekday=H006, saturday=H009, sunday=H010;E856;
+EDGARv81_AP;wwt;2021;1;;;nh3,nmvoc;<data_path>/EDGAR/v81_AP/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E858;
+EDGAR_2024_GHG;ags;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E700;
+EDGAR_2024_GHG;awb;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E701;
+EDGAR_2024_GHG;che;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E700;
+EDGAR_2024_GHG;ene;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W002;;H002;E700;
+EDGAR_2024_GHG;enf;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E701;
+EDGAR_2024_GHG;ind;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E700;
+EDGAR_2024_GHG;iro;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H004;E700;
+EDGAR_2024_GHG;mnm;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E701;
+EDGAR_2024_GHG;nmm;2021;1;;;co2;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H007;E702;
+EDGAR_2024_GHG;pro_coal;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E701;
+EDGAR_2024_GHG;pro_fff;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;pro_gas;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E701;
+EDGAR_2024_GHG;pro_oil;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E701;
+EDGAR_2024_GHG;rco;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W003;;H003;E700;
+EDGAR_2024_GHG;ref_trf;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;swd_inc;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;swd_ldf;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E701;
+EDGAR_2024_GHG;tnr_aviation_cds;2021;0;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;tnr_aviation_crs;2021;0;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;tnr_aviation_lto;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;tnr_other;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;tnr_ship;2021;0;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E700;
+EDGAR_2024_GHG;tro;2021;1;;;co2,ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W005;;weekday=H006, saturday=H009, sunday=H010;E700;
+EDGAR_2024_GHG;wwt;2021;1;;;ch4;<data_path>/EDGAR/2024_GHG/hermes_pp/yearly_mean;yearly;area;global;;;W001;;H001;E701;

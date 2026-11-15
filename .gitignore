@@ -1,0 +1,24 @@
+# Large shapefiles stored externally in /HDD1/Data/emissions/hermes/HERMES_IN/data/gadm_country_mask
+data/gadm_country_mask
+data/gadm_country_mask/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.ipynb_checkpoints/
+
+# Logs and Slurm outputs
+log.*
+*.log
+output.txt
+error.txt
+*.out
+*.err
+*.tmp
+*.part
+.DS_Store
+
+# Local agent/scratch directories
+scratch/

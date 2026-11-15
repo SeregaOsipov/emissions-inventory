@@ -1,0 +1,38 @@
+paths:
+  emissions_data_root: /HDD1/Data/emissions
+  hermes_work_dir: /HDD1/Data/emissions/hermes
+  hermes_input_dir: /HDD1/Data/emissions/hermes/HERMES_IN
+  hermes_data_path: /HDD1/Data/emissions/hermes/datasets
+  hermes_output_dir: /HDD1/Data/emissions/hermes/HERMES_OUT
+  auxiliary_files_root: /HDD1/Data/emissions/hermes/HERMES_OUT/auxiliary_files
+  gadm_country_mask_dir: /HDD1/Data/emissions/hermes/HERMES_IN/data/gadm_country_mask
+
+thofa_2023:
+  conf_file: conf/hermes_THOFA_2023.conf
+  ei_configuration: conf/EI_configuration_THOFA_WRF_Chem_2023.csv
+  start_date: "2023-05-15"
+  end_date: "2023-06-30"
+  n_time_steps: 46
+  domain:
+    type: lcc
+    nx: 450
+    ny: 450
+    resolution_m: 10000
+  inventory_ref_years:
+    GFASv12: 2023
+    EDGAR_2024_GHG: 2023
+    EDGARv81_AP: 2022
+    EDGARv81_VOC: 2022
+    CAMS-GLOB-SHIP_v32: 2022
+    CAMS-GLOB-SHIP_v32_voc: 2022
+    OMI-HTAPv2: 2017
+    caseiro: 2017
+    bourtsoukidis: 2020
+    iasi: 2016
+    wiedinmyer: 2010
+
+model:
+  submodule_path: models/hermesv3_gr
+  remote: https://gitlab.earth.bsc.es/Serega.Osipov/hermesv3_gr.git
+  branch: middle_east_branch
+  conda_env: py311_hermes

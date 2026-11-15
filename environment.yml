@@ -1,0 +1,39 @@
+name: py311_hermes
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - esmpy
+  - esmf
+  - mpi4py
+  - netcdf4
+  - hdf5
+  - cdo
+  - python-cdo
+  - numpy=1.26
+  - scipy
+  - pandas
+  - xarray
+  - dask
+  - geopandas
+  - pyogrio
+  - shapely
+  - fiona
+  - pyproj
+  - rtree
+  - configargparse
+  - cf-units
+  - udunits2
+  - timezonefinder
+  - holidays
+  - pytz
+  - cdsapi
+  - pyyaml
+  - openpyxl
+  - xlrd
+  - matplotlib-base
+  - cartopy
+  - regionmask
+  - gh
+  - lftp
+  - pip

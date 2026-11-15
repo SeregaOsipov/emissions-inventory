@@ -1,0 +1,35 @@
+Name;Short_Name;Units;id
+Carbon Monoxide;co;kg m-2 s-1;81
+Nitrogen Oxides expressed as monoxide nitrogen;nox_no;kg m-2 s-1;85
+Particulate Matter PM2.5;pm25;kg m-2 s-1;87
+Organic Carbon;oc;kg m-2 s-1;90
+Black Carbon;bc;kg m-2 s-1;91
+Sulfur Dioxide;so2;kg m-2 s-1;102
+Methanol;ch3oh;kg m-2 s-1;103
+Ethanol;c2h5oh;kg m-2 s-1;104
+Propane;c3h8;kg m-2 s-1;105
+Ethene;c2h4;kg m-2 s-1;106
+Propene;c3h6;kg m-2 s-1;107
+Isoprene;c5h8;kg m-2 s-1;108
+Terpenes;terpenes;kg m-2 s-1;109
+Higher Alkenes;hialkenes;kg m-2 s-1;111
+Higher Alkanes;hialkanes;kg m-2 s-1;112
+Formaldehyde;ch2o;kg m-2 s-1;113
+Acetaldehyde;c2h4o;kg m-2 s-1;114
+Acetone;c3h6o;kg m-2 s-1;115
+Ammonia;nh3;kg m-2 s-1;116
+Dimethyl Sulfide;c2h6s;kg m-2 s-1;117
+Ethane;c2h6;kg m-2 s-1;118
+Mean altitude of maximum injection above sea level;mami;m;119
+Altitude of plume top above sea level;apt;m;120
+Toluene;c7h8;kg m-2 s-1;231
+Benzene;c6h6;kg m-2 s-1;232
+Xylene;c8h10;kg m-2 s-1;233
+Butenes;c4h8;kg m-2 s-1;234
+Pentenes;c5h10;kg m-2 s-1;235
+Hexene;c6h12;kg m-2 s-1;236
+Octene;c8h16;kg m-2 s-1;237
+Butanes;c4h10;kg m-2 s-1;238
+Pentanes;c5h12;kg m-2 s-1;239
+Hexanes;c6h14;kg m-2 s-1;240
+Heptane;c7h16;kg m-2 s-1;241

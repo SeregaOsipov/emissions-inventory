@@ -1,0 +1,4 @@
+[submodule "models/hermesv3_gr"]
+	path = models/hermesv3_gr
+	url = https://gitlab.earth.bsc.es/Serega.Osipov/hermesv3_gr.git
+	branch = middle_east_branch
