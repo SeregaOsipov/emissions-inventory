@@ -20,6 +20,9 @@
 import argparse
 import os
 import re
+import shutil
+import subprocess
+import sys
 from netCDF4 import Dataset
 import cf_units
 import pandas as pd
@@ -179,6 +182,56 @@ def write_netcdf(output_name_path, data_list, center_lats, center_lons, grid_cel
     return True
 
 
+def _find_eccodes_tool(name):
+    found = shutil.which(name)
+    if found:
+        return found
+    candidate = os.path.join(os.path.dirname(sys.executable), name)
+    return candidate if os.path.isfile(candidate) and os.access(candidate, os.X_OK) else None
+
+
+def ensure_unique_grib_params(grib_file):
+    """Strip duplicate paramId records (e.g. server-side ADS duplicates) in place."""
+    grib_ls = _find_eccodes_tool('grib_ls')
+    grib_copy = _find_eccodes_tool('grib_copy')
+    if not grib_ls or not grib_copy:
+        return
+
+    out = subprocess.check_output([grib_ls, '-p', 'count:i,paramId:i', grib_file], text=True)
+    rows = []
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[0].isdigit() and parts[1].isdigit():
+            rows.append((parts[0], parts[1]))
+
+    seen = set()
+    kept_counts = []
+    for count_str, param_id in rows:
+        if param_id not in seen:
+            seen.add(param_id)
+            kept_counts.append(count_str)
+
+    if len(kept_counts) == len(rows):
+        return
+
+    print(
+        'Deduplicating {} GRIB records ({} -> {} unique paramIds)'.format(
+            grib_file, len(rows), len(kept_counts)
+        ),
+        flush=True,
+    )
+    tmp_grib = '{}.dedup.part'.format(grib_file)
+    try:
+        subprocess.run(
+            [grib_copy, '-w', 'count={}'.format('/'.join(kept_counts)), grib_file, tmp_grib],
+            check=True,
+        )
+        os.replace(tmp_grib, grib_file)
+    finally:
+        if os.path.exists(tmp_grib):
+            os.remove(tmp_grib)
+
+
 def do_transformation(input_file, date, output_dir, variables_list):
     """
     Transform the original file into a NEtCDF file that follows the conventions.
@@ -196,6 +249,7 @@ def do_transformation(input_file, date, output_dir, variables_list):
     :type variables_list: list
     """
     from cdo import Cdo
+    ensure_unique_grib_params(input_file)
     cdo = Cdo()
     # lets see if this fixes the "file not found" bug
     #cdo = Cdo(tempdir='/scratch/b/b302074/')

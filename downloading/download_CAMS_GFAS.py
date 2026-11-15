@@ -4,6 +4,9 @@
 import argparse
 import concurrent.futures
 import os
+import shutil
+import subprocess
+import sys
 import cdsapi
 import pandas as pd
 
@@ -63,6 +66,54 @@ def _default_output_dir():
     return os.path.join(data_root, 'CAMS-GFAS')
 
 
+def _find_eccodes_tool(name):
+    found = shutil.which(name)
+    if found:
+        return found
+    candidate = os.path.join(os.path.dirname(sys.executable), name)
+    return candidate if os.path.isfile(candidate) and os.access(candidate, os.X_OK) else None
+
+
+def ensure_unique_grib_params(grib_file):
+    """Strip duplicate paramId records served by ADS before finalizing a GRIB file."""
+    grib_ls = _find_eccodes_tool('grib_ls')
+    grib_copy = _find_eccodes_tool('grib_copy')
+    if not grib_ls or not grib_copy:
+        return
+
+    out = subprocess.check_output([grib_ls, '-p', 'count:i,paramId:i', grib_file], text=True)
+    rows = []
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[0].isdigit() and parts[1].isdigit():
+            rows.append((parts[0], parts[1]))
+
+    seen = set()
+    kept_counts = []
+    for count_str, param_id in rows:
+        if param_id not in seen:
+            seen.add(param_id)
+            kept_counts.append(count_str)
+
+    if len(kept_counts) == len(rows):
+        return
+
+    print(
+        f'Deduplicating {grib_file} ({len(rows)} -> {len(kept_counts)} unique paramIds)',
+        flush=True,
+    )
+    tmp_grib = f'{grib_file}.dedup.part'
+    try:
+        subprocess.run(
+            [grib_copy, '-w', f"count={'/'.join(kept_counts)}", grib_file, tmp_grib],
+            check=True,
+        )
+        os.replace(tmp_grib, grib_file)
+    finally:
+        if os.path.exists(tmp_grib):
+            os.remove(tmp_grib)
+
+
 def download_day(date, output_dir):
     """Download one daily CAMS-GFAS GRIB file if missing or empty."""
     date_iso = date.strftime('%Y-%m-%d')
@@ -82,6 +133,7 @@ def download_day(date, output_dir):
     print(f'Downloading {date_iso} -> {target}', flush=True)
     client = cdsapi.Client()
     client.retrieve('cams-global-fire-emissions-gfas', request, tmp_target)
+    ensure_unique_grib_params(tmp_target)
     os.replace(tmp_target, target)
     print(f'Completed {target} ({os.path.getsize(target)} bytes)', flush=True)
     return target
