@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import cdsapi
 import pandas as pd
 
@@ -114,6 +115,25 @@ def ensure_unique_grib_params(grib_file):
             os.remove(tmp_grib)
 
 
+def _retrieve_with_retries(request, out_path, max_attempts=3):
+    """Retrieve an ADS request into out_path with exponential backoff."""
+    last_exc = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            client = cdsapi.Client()
+            client.retrieve('cams-global-fire-emissions-gfas', request, out_path)
+            return
+        except Exception as exc:
+            last_exc = exc
+            if os.path.exists(out_path):
+                os.remove(out_path)
+            if attempt < max_attempts:
+                wait_s = 15 * (2 ** (attempt - 1))
+                print(f'Retry {attempt}/{max_attempts - 1} in {wait_s}s after ADS error: {exc}', flush=True)
+                time.sleep(wait_s)
+    raise last_exc
+
+
 def download_day(date, output_dir):
     """Download one daily CAMS-GFAS GRIB file if missing or empty."""
     date_iso = date.strftime('%Y-%m-%d')
@@ -131,12 +151,88 @@ def download_day(date, output_dir):
         'format': 'grib',
     }
     print(f'Downloading {date_iso} -> {target}', flush=True)
-    client = cdsapi.Client()
-    client.retrieve('cams-global-fire-emissions-gfas', request, tmp_target)
-    ensure_unique_grib_params(tmp_target)
-    os.replace(tmp_target, target)
+    try:
+        _retrieve_with_retries(request, tmp_target)
+        ensure_unique_grib_params(tmp_target)
+        os.replace(tmp_target, target)
+    finally:
+        if os.path.exists(tmp_target):
+            os.remove(tmp_target)
     print(f'Completed {target} ({os.path.getsize(target)} bytes)', flush=True)
     return target
+
+
+def download_chunk(chunk_dates, output_dir):
+    """Download a contiguous chunk of dates and split into daily ga_YYYYMMDD.grb files."""
+    if len(chunk_dates) == 1:
+        return [download_day(chunk_dates[0], output_dir)]
+
+    grib_copy = _find_eccodes_tool('grib_copy')
+    if not grib_copy:
+        return [download_day(d, output_dir) for d in chunk_dates]
+
+    d_first = chunk_dates[0].strftime('%Y-%m-%d')
+    d_last = chunk_dates[-1].strftime('%Y-%m-%d')
+    c_first = chunk_dates[0].strftime('%Y%m%d')
+    c_last = chunk_dates[-1].strftime('%Y%m%d')
+
+    chunk_part = os.path.join(output_dir, f'.chunk_{c_first}_{c_last}.grb.part')
+    split_dir = os.path.join(output_dir, f'.tmp_split_{c_first}_{c_last}')
+    request = {
+        'variable': GFAS_VARIABLES,
+        'date': f'{d_first}/{d_last}',
+        'format': 'grib',
+    }
+    print(f'Downloading chunk {d_first}..{d_last} ({len(chunk_dates)} days)', flush=True)
+    outputs = []
+    try:
+        os.makedirs(split_dir, exist_ok=True)
+        _retrieve_with_retries(request, chunk_part)
+        subprocess.run(
+            [grib_copy, '-f', chunk_part, os.path.join(split_dir, 'ga_[dataDate].grb')],
+            check=True,
+        )
+        for d in chunk_dates:
+            dc = d.strftime('%Y%m%d')
+            target = os.path.join(output_dir, f'ga_{dc}.grb')
+            split_file = os.path.join(split_dir, f'ga_{dc}.grb')
+            if not os.path.isfile(split_file) or os.path.getsize(split_file) == 0:
+                raise RuntimeError(f'Missing split GRIB for {dc} from chunk {d_first}..{d_last}')
+            if os.path.exists(target) and os.path.getsize(target) > 0:
+                outputs.append(target)
+                continue
+            ensure_unique_grib_params(split_file)
+            os.replace(split_file, target)
+            outputs.append(target)
+        print(f'Completed chunk {d_first}..{d_last} ({len(outputs)} daily files)', flush=True)
+        return outputs
+    finally:
+        if os.path.exists(chunk_part):
+            os.remove(chunk_part)
+        if os.path.isdir(split_dir):
+            shutil.rmtree(split_dir, ignore_errors=True)
+
+
+def build_missing_chunks(dates, output_dir, chunk_days):
+    """Group missing dates into contiguous runs capped at chunk_days."""
+    missing = [
+        d for d in dates
+        if not (os.path.exists(os.path.join(output_dir, f"ga_{d.strftime('%Y%m%d')}.grb"))
+                and os.path.getsize(os.path.join(output_dir, f"ga_{d.strftime('%Y%m%d')}.grb")) > 0)
+    ]
+    if not missing:
+        return []
+
+    runs = []
+    current = [missing[0]]
+    for d in missing[1:]:
+        if (d - current[-1]).days == 1 and len(current) < chunk_days:
+            current.append(d)
+        else:
+            runs.append(current)
+            current = [d]
+    runs.append(current)
+    return runs
 
 
 def main():
@@ -146,25 +242,37 @@ def main():
     parser.add_argument('--end_date', default='2023-06-30', help='End date YYYY-MM-DD (inclusive).')
     parser.add_argument('--output_dir', default=_default_output_dir(), help='Directory to write ga_YYYYMMDD.grb files.')
     parser.add_argument('--workers', type=int, default=4, help='Parallel ADS download threads.')
+    parser.add_argument('--chunk_days', type=int, default=4, help='Days packed per multi-day ADS request (1 disables packing).')
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
     dates = [d.to_timestamp() for d in pd.period_range(start=args.start_date, end=args.end_date, freq='D')]
-    print(f'Downloading {len(dates)} daily CAMS-GFAS files ({args.start_date} to {args.end_date}) into {args.output_dir} with {args.workers} workers', flush=True)
+    chunks = build_missing_chunks(dates, args.output_dir, max(1, args.chunk_days))
+    skipped = len(dates) - sum(len(c) for c in chunks)
+    print(
+        f'CAMS-GFAS {args.start_date}..{args.end_date}: {len(dates)} days total, '
+        f'{skipped} existing skipped, {len(chunks)} ADS request chunk(s) with {args.workers} workers',
+        flush=True,
+    )
+
+    if not chunks:
+        print('DONE', flush=True)
+        return
 
     failed = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
-        futures = {executor.submit(download_day, d, args.output_dir): d for d in dates}
+        futures = {executor.submit(download_chunk, chunk, args.output_dir): chunk for chunk in chunks}
         for future in concurrent.futures.as_completed(futures):
-            d = futures[future]
+            chunk = futures[future]
+            label = f"{chunk[0].strftime('%Y-%m-%d')}..{chunk[-1].strftime('%Y-%m-%d')}"
             try:
                 future.result()
             except Exception as exc:
-                print(f'FAILED {d.strftime("%Y-%m-%d")}: {exc}', flush=True)
-                failed.append((d, exc))
+                print(f'FAILED {label}: {exc}', flush=True)
+                failed.append((label, exc))
 
     if failed:
-        raise RuntimeError(f'{len(failed)} day(s) failed to download: {[d.strftime("%Y-%m-%d") for d, _ in failed]}')
+        raise RuntimeError(f'{len(failed)} chunk(s) failed to download: {[lbl for lbl, _ in failed]}')
     print('DONE', flush=True)
 
 

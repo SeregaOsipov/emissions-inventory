@@ -48,6 +48,7 @@ def parse_args():
     parser.add_argument('--speciation_path', default=DEFAULT_SPECIATION_PATH, help='Path to NMVOC_speciation_HTAP_v3.xls.')
     parser.add_argument('--start_date', default='2022-05-14', help='Start date YYYY-MM-DD (inclusive).')
     parser.add_argument('--end_date', default='2022-07-01', help='End date YYYY-MM-DD (inclusive).')
+    parser.add_argument('--overwrite', action='store_true', help='Overwrite existing daily VOC NetCDF files.')
     return parser.parse_args()
 
 
@@ -121,12 +122,19 @@ if __name__ == '__main__':
     daily_dates = emissions_ds.time
 
     for date, i in zip(daily_dates, range(daily_dates.size)):
-        print('Date {} out of {}: {}'.format(i, daily_dates.size, date.values))
-        time_slice_ds = speciated_vocs_ds.isel(time=i).load()  # bugger entire time frame to speed up things
+        date_compact = date.dt.strftime('%Y%m%d').item()
+        pending_vocs = []
         for voc in vocs:
-            pollutant = voc
+            out_path_aux = os.path.join(output_folder_path, voc, '{0}_{1}.nc'.format(voc, date_compact))
+            if args.overwrite or not (os.path.isfile(out_path_aux) and os.path.getsize(out_path_aux) > 0):
+                pending_vocs.append((voc, out_path_aux))
 
-            # data = speciated_vocs_ds.sel(voc=voc).isel(time=i).load()
+        if not pending_vocs:
+            continue
+
+        print('Date {} out of {}: {} ({} VOCs)'.format(i, daily_dates.size, date.values, len(pending_vocs)))
+        time_slice_ds = speciated_vocs_ds.isel(time=i).load()  # buffer entire time frame to speed up things
+        for voc, out_path_aux in pending_vocs:
             data = time_slice_ds.sel(voc=voc)
 
             emission = {
@@ -135,7 +143,6 @@ if __name__ == '__main__':
                 'data': data.data.reshape((1, data.shape[-2], data.shape[-1]))
             }
 
-            out_path_aux = os.path.join(output_folder_path, pollutant, '{0}_{1}.nc'.format(pollutant, date.dt.strftime('%Y%m%d').item()))
             print('{}: {}'.format(voc, out_path_aux))
 
             os.makedirs(os.path.dirname(out_path_aux), exist_ok=True)

@@ -18,6 +18,7 @@
 
 
 import argparse
+import concurrent.futures
 import os
 import re
 import shutil
@@ -44,6 +45,7 @@ parser.add_argument("--parameters_file", help="GFAS_Parameters.csv", default=DEF
 parser.add_argument("--start_date", default="2023-05-15", help="Start date YYYY-MM-DD (used when --in_file_path is omitted)")
 parser.add_argument("--end_date", default="2023-06-30", help="End date YYYY-MM-DD (used when --in_file_path is omitted)")
 parser.add_argument("--overwrite", action="store_true", help="Overwrite existing ga_YYYYMMDD.nc outputs in batch mode")
+parser.add_argument("--workers", type=int, default=8, help="Parallel worker processes in batch date-range mode")
 args = parser.parse_args()
 
 # ============== README ======================
@@ -271,12 +273,18 @@ def do_transformation(input_file, date, output_dir, variables_list):
     nc_in.close()
 
     out_path_aux = os.path.join(output_dir, 'daily_mean', 'multivar')
-    if not os.path.exists(out_path_aux):
-        os.makedirs(out_path_aux)
+    os.makedirs(out_path_aux, exist_ok=True)
     out_path_aux = os.path.join(out_path_aux, 'ga_{0}.nc'.format(date.strftime('%Y%m%d')))
     write_netcdf(out_path_aux, variables_list, lats, lons, cell_area, date)
 
     return True
+
+
+def _process_batch_day(task):
+    in_file, date_obj, output_folder_path, parameters_file = task
+    var_list = do_var_list(parameters_file)
+    do_transformation(in_file, date_obj, output_folder_path, var_list)
+    return date_obj.strftime('%Y%m%d')
 
 
 def do_var_list(variables_file):
@@ -304,21 +312,28 @@ def do_var_list(variables_file):
 
 
 if __name__ == '__main__':
-    var_list = do_var_list(args.parameters_file)
-
     if args.in_file_path:
+        var_list = do_var_list(args.parameters_file)
         match = re.search(r'_(\d{8})\.', args.in_file_path)
         date_string = match.group(1)
         date_aux = datetime.strptime(date_string, '%Y%m%d').date()
         do_transformation(args.in_file_path, date_aux, args.output_folder_path, [dict(v) for v in var_list])
     else:
+        tasks = []
         for ts in pd.date_range(start=args.start_date, end=args.end_date, freq='D'):
             date_compact = ts.strftime('%Y%m%d')
             out_file = os.path.join(args.output_folder_path, 'daily_mean', 'multivar', 'ga_{0}.nc'.format(date_compact))
             if not args.overwrite and os.path.isfile(out_file) and os.path.getsize(out_file) > 0:
-                print('Skipping existing output: {0}'.format(out_file))
                 continue
             in_file = os.path.join(args.input_dir, 'ga_{0}.grb'.format(date_compact))
             if not os.path.isfile(in_file):
                 raise FileNotFoundError('Expected CAMS-GFAS GRIB file not found: {0}'.format(in_file))
-            do_transformation(in_file, ts.date(), args.output_folder_path, [dict(v) for v in var_list])
+            tasks.append((in_file, ts.date(), args.output_folder_path, args.parameters_file))
+
+        print('Converting {0} pending CAMS-GFAS file(s) with {1} workers'.format(len(tasks), args.workers), flush=True)
+        if args.workers <= 1 or len(tasks) <= 1:
+            for task in tasks:
+                _process_batch_day(task)
+        else:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=args.workers) as executor:
+                list(executor.map(_process_batch_day, tasks))

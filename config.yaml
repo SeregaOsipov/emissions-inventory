@@ -13,6 +13,7 @@ thofa_2023:
   start_date: "2023-05-15"
   end_date: "2023-06-30"
   n_time_steps: 46
+  verified_reference: /scratch/Data/AirQuality/THOFA/emissions/HERMESv3_radm2_madesorgam_20230515_THOFA_EDGARv81_GHG.nc
   domain:
     type: lcc
     nx: 450
@@ -30,6 +31,14 @@ thofa_2023:
     bourtsoukidis: 2020
     iasi: 2016
     wiedinmyer: 2010
+
+full_year_2023:
+  conf_file: conf/hermes_2023.conf
+  ei_configuration: conf/EI_configuration_WRF_Chem_2023.csv
+  start_date: "2023-01-01"
+  end_date: "2024-01-01"
+  n_time_steps: 366
+  output_file: /HDD1/Data/emissions/hermes/HERMES_OUT/HERMESv3_radm2_madesorgam_20230101.nc
 
 model:
   submodule_path: models/hermesv3_gr

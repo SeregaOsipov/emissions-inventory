@@ -22,3 +22,4 @@ error.txt
 
 # Local agent/scratch directories
 scratch/
+.idea/
