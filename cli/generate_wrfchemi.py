@@ -379,7 +379,7 @@ def _write_run_conf(
     cp.read(base_conf, encoding="utf-8")
 
     out_dir = tmp_dir / out_sub
-    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "logs").mkdir(parents=True, exist_ok=True)
 
     cp["GENERAL"]["input_dir"] = str(paths["input_dir"])
     cp["GENERAL"]["data_path"] = str(paths["data_path"])
@@ -546,6 +546,8 @@ def generate_wrfchemi(
         print(f"[HERMES-CLI] Acquiring domain auxiliary lock {lock_path}...", flush=True)
         with open(lock_path, "w", encoding="utf-8") as lock_f:
             fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            (aux_dir / "shapefile").mkdir(parents=True, exist_ok=True)
+            (aux_dir / f"shapefiles_n{eff_tasks}").mkdir(parents=True, exist_ok=True)
 
             # Avoid first-run temporal_coords.nc / timezones.nc MPI barrier race when aux_dir is fresh;
             # keep one yearly point row so --first_time True creates both without unused Weight_Matrix_*_1.nc builds.

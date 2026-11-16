@@ -267,8 +267,29 @@ def do_transformation(input_file, date, output_dir, variables_list):
     lats = nc_in.variables['lat'][:]
     lons = nc_in.variables['lon'][:]
 
+    param_to_var = {
+        str(getattr(v_obj, 'param', '')).split('.')[0]: v_name
+        for v_name, v_obj in nc_in.variables.items()
+        if hasattr(v_obj, 'param')
+    }
     for variable in variables_list:
-        variable['data'] = nc_in.variables[variable['original_name']][:]
+        orig_name = variable['original_name']
+        if orig_name in nc_in.variables:
+            src_name = orig_name
+        else:
+            code_str = orig_name[3:] if orig_name.startswith('var') else orig_name
+            if code_str in param_to_var:
+                src_name = param_to_var[code_str]
+            elif variable['name'] == 'mami' and '120' in param_to_var:
+                print("[GFAS] 'mami' (param 119) absent in GRIB2; filling from 'apt' (param 120)", flush=True)
+                src_name = param_to_var['120']
+            else:
+                raise KeyError(
+                    "GFAS variable {} (param {}) not found in {}".format(
+                        orig_name, code_str, list(nc_in.variables.keys())
+                    )
+                )
+        variable['data'] = nc_in.variables[src_name][:]
 
     nc_in.close()
 
