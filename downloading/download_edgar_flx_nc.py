@@ -5,8 +5,10 @@ import argparse
 import concurrent.futures
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
+import zipfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -77,8 +79,8 @@ def build_targets(stream, years, base_dir):
 
 
 def download_one(urls, local_path, timeout):
-    """Download the first matching candidate URL to local_path atomically."""
-    if os.path.exists(local_path) and os.path.getsize(local_path) > 0:
+    """Download the first matching candidate URL to local_path atomically with retries."""
+    if os.path.exists(local_path) and zipfile.is_zipfile(local_path):
         return 'exists', local_path
 
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
@@ -86,33 +88,31 @@ def download_one(urls, local_path, timeout):
     last_error = None
 
     for url in urls:
-        try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'emissions-inventory/1.0'})
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                with open(tmp_path, 'wb') as fh:
-                    while True:
-                        chunk = resp.read(1024 * 1024)
-                        if not chunk:
-                            break
-                        fh.write(chunk)
-            if os.path.getsize(tmp_path) == 0:
-                os.remove(tmp_path)
-                last_error = RuntimeError(f'Empty response from {url}')
-                continue
-            os.replace(tmp_path, local_path)
-            return 'downloaded', local_path
-        except urllib.error.HTTPError as exc:
-            if exc.code == 404:
+        for attempt in range(1, 4):
+            try:
+                req = urllib.request.Request(url, headers={'User-Agent': 'emissions-inventory/1.0'})
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    with open(tmp_path, 'wb') as fh:
+                        while True:
+                            chunk = resp.read(1024 * 1024)
+                            if not chunk:
+                                break
+                            fh.write(chunk)
+                if not zipfile.is_zipfile(tmp_path):
+                    raise RuntimeError(f'Downloaded file is not a valid zip archive: {url}')
+                os.replace(tmp_path, local_path)
+                return 'downloaded', local_path
+            except urllib.error.HTTPError as exc:
                 last_error = exc
-                continue
-            last_error = exc
-            break
-        except Exception as exc:
-            last_error = exc
-            break
-        finally:
-            if os.path.exists(tmp_path):
-                os.remove(tmp_path)
+                if exc.code == 404:
+                    break
+            except Exception as exc:
+                last_error = exc
+            finally:
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+            if attempt < 3:
+                time.sleep(2 * attempt)
 
     if isinstance(last_error, urllib.error.HTTPError) and last_error.code == 404:
         return 'not_found', urls[0]
