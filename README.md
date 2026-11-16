@@ -64,3 +64,28 @@ Large emission datasets live under `/HDD1/Data/emissions`, with HERMES input/out
      `NTASKS=24 bash jobs/hermesv3_gr_thofa_2023.sh` -> verified **bit-for-bit identical (`MaxAbsDiff = 0.0`) across all `33` `E_*` variables (including `E_CO2` and `E_CH4`)** against `/scratch/Data/AirQuality/THOFA/emissions/HERMESv3_radm2_madesorgam_20230515_THOFA_EDGARv81_GHG.nc`, and bit-for-bit identical on all `32` shared variables against `..._THOFA_EDGARv81.nc`.
    - **Full-Year 2023 (`2023-01-01`..`2024-01-01`, 366 steps)**:
      `NTASKS=24 bash jobs/hermesv3_gr_2023.sh` -> writes `/HDD1/Data/emissions/hermes/HERMES_OUT/HERMESv3_radm2_madesorgam_20230101.nc`.
+
+## Domain-Agnostic WRF-Chem CLI & 2023 Climatology Builder
+
+For arbitrary WRF `geo_em.d0*.nc` grids (standalone or invoked by external forecasting pipelines):
+
+* **Generate N-day WRF-Chem emissions (`cli/generate_wrfchemi.py` / `jobs/run_hermes_wrf_domain.sh`)**:
+  ```bash
+  bash jobs/run_hermes_wrf_domain.sh \
+    --start-date 2026-11-14 \
+    --days 6 \
+    --geo-em /path/to/geo_em.d01.nc \
+    --out-file /path/to/wrfchemi_d01 \
+    --cluster local_workstation \
+    --ntasks 6 \
+    --gfas-mode nrt_persist
+  ```
+* **Build 366-day 2023 baseline climatologies (`cli/build_climatology_2023.py`)**:
+  ```bash
+  /home/osipovs/apps/miniforge3/envs/py311_hermes/bin/python cli/build_climatology_2023.py \
+    --geo-em-dir /scratch/Data/AirQuality/domains/qatar_2dom \
+    --out-dir /scratch/Data/AirQuality/domains/qatar_2dom/emissions_clim_2023 \
+    --cluster local_workstation \
+    --ntasks 6 \
+    --gfas-mode historical
+  ```

@@ -45,3 +45,13 @@ model:
   remote: https://gitlab.earth.bsc.es/Serega.Osipov/hermesv3_gr.git
   branch: middle_east_branch
   conda_env: py311_hermes
+
+runtime:
+  default_cluster: local_workstation
+  clusters:
+    local_workstation:
+      ntasks: 6
+    azure_rccg:
+      ntasks: 24
+    shaheen:
+      ntasks: 48
