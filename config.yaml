@@ -50,7 +50,7 @@ runtime:
   default_cluster: local_workstation
   clusters:
     local_workstation:
-      ntasks: 6
+      ntasks: 12
     azure_rccg:
       ntasks: 24
     shaheen:
